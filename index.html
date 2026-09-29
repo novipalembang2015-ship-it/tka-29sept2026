@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis TKA Kimia - Tim IT Sekolah</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen pb-12">
+
+    <!-- Header / Navbar -->
+    <header class="bg-emerald-700 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 py-6">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                <div>
+                    <span class="bg-emerald-800 text-emerald-200 text-xs font-semibold px-2.5 py-0.5 rounded uppercase tracking-wide">Portal Ujian Sekolah</span>
+                    <h1 class="text-2xl font-bold mt-1">Kuis Latihan TKA Kimia (5 Pilihan Jawaban A–E)</h1>
+                    <p class="text-emerald-100 text-sm">Topik: Stoikiometri dan Struktur & Sifat Hidrokarbon</p>
+                </div>
+                <div class="bg-emerald-800/80 px-4 py-2 rounded-lg text-right border border-emerald-600">
+                    <span class="block text-xs text-emerald-200">Total Nilai Maksimal</span>
+                    <span class="text-xl font-bold text-yellow-300">100 Poin</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 mt-8">
+
+        <!-- Form Identitas Siswa -->
+        <div id="student-info-card" class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
+            <h2 class="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                Identitas Responden
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
+                    <input type="text" id="student-name" class="w-full px-3.5 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm transition" placeholder="Masukkan nama siswa...">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Kelas / No. Absen <span class="text-red-500">*</span></label>
+                    <input type="text" id="student-class" class="w-full px-3.5 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm transition" placeholder="Contoh: XII MIPA 1 / 15">
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Bar Pengerjaan -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-6 flex items-center justify-between gap-4">
+            <div class="flex-1">
+                <div class="flex justify-between text-xs font-medium text-slate-600 mb-1">
+                    <span>Progress Pengerjaan</span>
+                    <span id="progress-text">0 dari 5 Soal Dijawab</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                    <div id="progress-bar" class="bg-emerald-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Kuis Soal -->
+        <form id="quiz-form" class="space-y-6">
+            <div id="questions-container" class="space-y-6">
+                <!-- Soal di-render dinamis lewat JS -->
+            </div>
+
+            <!-- Tombol Submit -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                    <p id="submit-hint" class="text-xs text-amber-600 font-medium flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        <span>Lengkapi Nama, Kelas, dan jawab seluruh 5 soal untuk mengumpulkan.</span>
+                    </p>
+                </div>
+                <button type="submit" id="btn-submit" disabled class="w-full sm:w-auto bg-slate-300 text-slate-500 font-semibold px-8 py-3 rounded-lg shadow-none cursor-not-allowed transition-all flex items-center justify-center gap-2">
+                    <span>Kumpulkan Jawaban</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </div>
+        </form>
+
+        <!-- Hasil Skor & Pembahasan (Tersembunyi secara default) -->
+        <div id="results-section" class="hidden space-y-6 mt-8">
+            <!-- Banner Skor Utama -->
+            <div class="bg-gradient-to-r from-emerald-800 to-teal-900 text-white rounded-2xl p-8 shadow-xl text-center relative overflow-hidden">
+                <div class="relative z-10">
+                    <span class="inline-block bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-emerald-200 mb-3">Hasil Evaluasi Kuis</span>
+                    <h2 class="text-xl font-medium text-emerald-100">Nilai Akhir Anda</h2>
+                    <div class="my-4">
+                        <span id="final-score" class="text-6xl font-extrabold text-yellow-300">0</span>
+                        <span class="text-2xl font-bold text-emerald-200"> / 100</span>
+                    </div>
+                    <p id="score-feedback" class="text-lg font-medium text-white mb-2"></p>
+                    <p id="student-summary" class="text-xs text-emerald-200"></p>
+
+                    <div class="flex flex-wrap items-center justify-center gap-3 mt-6">
+                        <button onclick="startNewRespondent()" class="bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-bold px-5 py-2.5 rounded-lg text-sm shadow transition flex items-center gap-2 cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            <span>Input Responden Baru</span>
+                        </button>
+                        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'});" class="bg-emerald-700 hover:bg-emerald-600 text-white font-semibold px-5 py-2.5 rounded-lg text-sm border border-emerald-500 shadow transition flex items-center gap-2 cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            <span>Lihat Detail Pembahasan</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kartu Rekapitulasi Semua Responden -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                    <div>
+                        <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-2.5 py-1 rounded-md uppercase">Panel Guru / Admin</span>
+                        <h3 class="text-xl font-bold text-slate-800 mt-1">Rekapitulasi Hasil Semua Responden</h3>
+                        <p class="text-xs text-slate-500">Semua isian kuis tersimpan secara otomatis dan dapat diunduh untuk analisis penilaian.</p>
+                    </div>
+                    
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="openAdminAuthModal('csv')" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg shadow-sm transition flex items-center gap-2 cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            <span>Unduh Rekap Excel (CSV)</span>
+                        </button>
+                        <button onclick="exportToJSON()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2.5 rounded-lg shadow-sm transition flex items-center gap-2 cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                            <span>Unduh Data JSON</span>
+                        </button>
+                        <button onclick="loadSampleData()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2.5 rounded-lg border border-slate-300 transition flex items-center gap-1.5 cursor-pointer" title="Tambah 5 data responden simulasi">
+                            <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                            <span>+ Simulasi Data (5 Siswa)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Ringkasan Statistik -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                        <span class="text-xs font-semibold text-slate-500 uppercase">Total Responden</span>
+                        <p id="recap-total-count" class="text-2xl font-bold text-slate-800 mt-1">0</p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                        <span class="text-xs font-semibold text-slate-500 uppercase">Rata-Rata Nilai</span>
+                        <p id="recap-avg-score" class="text-2xl font-bold text-emerald-600 mt-1">0</p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                        <span class="text-xs font-semibold text-slate-500 uppercase">Nilai Tertinggi</span>
+                        <p id="recap-max-score" class="text-2xl font-bold text-yellow-600 mt-1">0</p>
+                    </div>
+                </div>
+
+                <!-- Notifikasi Status -->
+                <div id="action-notification" class="hidden p-3 rounded-lg text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-300"></div>
+
+                <!-- Tabel Responden -->
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="w-full text-left text-xs text-slate-700">
+                        <thead class="bg-slate-100 text-slate-800 uppercase font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="px-4 py-3">No</th>
+                                <th class="px-4 py-3">Nama Responden</th>
+                                <th class="px-4 py-3">Kelas / Absen</th>
+                                <th class="px-4 py-3 text-center">Waktu Submit</th>
+                                <th class="px-4 py-3 text-center">Rincian Jawaban (S1-S5)</th>
+                                <th class="px-4 py-3 text-center">Skor</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recap-table-body" class="divide-y divide-slate-200 bg-white">
+                            <!-- Diisi via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex justify-end pt-2">
+                    <button onclick="clearAllSubmissions()" class="text-xs text-red-600 hover:text-red-800 font-medium underline flex items-center gap-1 cursor-pointer">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        <span>Hapus Semua Data Rekap</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Header Kunci Jawaban & Pembahasan -->
+            <div class="flex items-center justify-between border-b border-slate-300 pb-3 mt-8">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800">Kunci Jawaban & Pembahasan Lengkap</h3>
+                    <p class="text-xs text-slate-500">Evaluasi jawaban Anda dan pelajari pembahasan di bawah ini.</p>
+                </div>
+                <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1 rounded-full">5 Soal Terbuka</span>
+            </div>
+
+            <!-- Kontainer Pembahasan Soal -->
+            <div id="review-container" class="space-y-6">
+                <!-- Diisi otomatis oleh JavaScript -->
+            </div>
+        </div>
+
+        <!-- Modal Otentikasi Admin Password -->
+        <div id="admin-auth-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-200 max-w-sm w-full p-6 space-y-4">
+                <div class="flex items-center gap-3 text-indigo-700">
+                    <div class="bg-indigo-100 p-2.5 rounded-xl shrink-0">
+                        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-800">Otentikasi Admin</h3>
+                        <p class="text-xs text-slate-500">Masukkan password admin untuk mengunduh rekap.</p>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Password Admin</label>
+                    <input type="password" id="admin-password-input" class="w-full px-3.5 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition" placeholder="Masukkan password admin..." onkeyup="if(event.key==='Enter') verifyAdminPassword()">
+                    <p id="admin-auth-error" class="text-xs text-red-600 mt-1.5 hidden font-medium">⚠️ Password salah! Akses ditolak.</p>
+                </div>
+                <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                    <button type="button" onclick="closeAdminAuthModal()" class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 border border-slate-200 transition cursor-pointer">Batal</button>
+                    <button type="button" onclick="verifyAdminPassword()" class="px-4 py-2 rounded-lg text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition cursor-pointer">Verifikasi & Unduh</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Cadangan Ekspor Data Excel/CSV -->
+        <div id="export-data-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full p-6 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2 text-emerald-700">
+                        <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <h3 class="text-base font-bold text-slate-800">Opsi Unduh & Salin Rekap Excel</h3>
+                    </div>
+                    <button onclick="closeExportDataModal()" class="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
+                </div>
+
+                <p class="text-xs text-slate-600 leading-relaxed">
+                    Pilih metode unduh di bawah. Jika peramban memblokir unduhan otomatis, Anda dapat menekan tombol <b>"Salin Data ke Clipboard"</b> lalu tempel (*Paste / Ctrl+V*) secara langsung di Microsoft Excel atau Google Sheets.
+                </p>
+
+                <!-- Area Teks CSV Raw -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Pratinjau Data Teks CSV / Excel:</label>
+                    <textarea id="csv-raw-textarea" readonly class="w-full h-32 px-3 py-2 bg-slate-50 font-mono text-[11px] text-slate-700 border border-slate-300 rounded-lg outline-none focus:ring-1 focus:ring-emerald-500 select-all"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                    <button type="button" onclick="downloadXLS()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-3 py-2.5 rounded-lg shadow transition flex items-center justify-center gap-1.5 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span>Unduh Excel Native (.xls)</span>
+                    </button>
+
+                    <button type="button" onclick="downloadCSVDirect()" class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-3 py-2.5 rounded-lg shadow transition flex items-center justify-center gap-1.5 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <span>Unduh File CSV (.csv)</span>
+                    </button>
+
+                    <button type="button" onclick="copyCSVToClipboard()" class="sm:col-span-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2.5 rounded-lg shadow transition flex items-center justify-center gap-2 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                        <span>Salin Data ke Clipboard (Tempel Langsung ke Excel)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Data Soal dengan 5 Pilihan Jawaban (A, B, C, D, E) & Pembahasan Kuis TKA Kimia
+        const quizData = [
+            {
+                id: 1,
+                title: "Soal 1: Stoikiometri Pembakaran Campuran Gas",
+                points: 20,
+                question: "Gas metana dan propana merupakan komponen bahan bakar gas. Dalam suatu percobaan, campuran 12 liter metana (CH₄) dan propana (C₃H₈) dibakar sempurna menghasilkan gas CO₂ dan 32 L uap air (H₂O).\n\nReaksi pembakaran:\nCH₄ (g) + 2O₂ (g) → CO₂ (g) + 2H₂O (g)\nC₃H₈ (g) + 5O₂ (g) → 3CO₂ (g) + 4H₂O (g)\n\nBerapakah volume total gas CO₂ yang dihasilkan dari pembakaran campuran tersebut jika diukur pada suhu dan tekanan yang sama?",
+                options: [
+                    "12 L",
+                    "16 L",
+                    "20 L",
+                    "24 L",
+                    "32 L"
+                ],
+                correctIndex: 2, // C
+                explanation: "<b>Langkah Pembahasan:</b><br>" +
+                    "1. Misalkan volume CH₄ = x L dan C₃H₈ = y L, maka <b>x + y = 12</b>.<br>" +
+                    "2. Perbandingan volume uap air (H₂O) sesuai koefisien:<br>" +
+                    "   • H₂O dari CH₄ = 2x<br>" +
+                    "   • H₂O dari C₃H₈ = 4y<br>" +
+                    "   • Total H₂O = <b>2x + 4y = 32 L</b><br>" +
+                    "3. Substitusi x = 12 - y ke dalam persamaan H₂O:<br>" +
+                    "   2(12 - y) + 4y = 32 → 24 - 2y + 4y = 32 → 2y = 8 → <b>y = 4 L (C₃H₈)</b>, sehingga <b>x = 8 L (CH₄)</b>.<br>" +
+                    "4. Hitung Volume CO₂ total = x + 3y = 8 + 3(4) = 8 + 12 = <b>20 L</b>."
+            },
+            {
+                id: 2,
+                title: "Soal 2: Stoikiometri Reaksi Termit & Pereaksi Pembatas",
+                points: 20,
+                question: "Pengelasan rel kereta api menggunakan reaksi termit antara serbuk aluminium dan besi(III) oksida:\n\n2Al (s) + Fe₂O₃ (s) → Al₂O₃ (s) + 2Fe (l)\n\nDalam suatu percobaan, sebanyak 5,4 gram serbuk Al direaksikan dengan 24 gram Fe₂O₃. Berapa gram besi (Fe) maksimum yang dapat diperoleh?\n(Diketahui: Ar Al = 27; Fe = 56; O = 16)",
+                options: [
+                    "8,4 gram",
+                    "11,2 gram",
+                    "16,8 gram",
+                    "22,4 gram",
+                    "33,6 gram"
+                ],
+                correctIndex: 1, // B
+                explanation: "<b>Langkah Pembahasan:</b><br>" +
+                    "1. Mol Al = 5,4 / 27 = <b>0,2 mol</b>.<br>" +
+                    "2. Mr Fe₂O₃ = 2(56) + 3(16) = 160 g/mol → Mol Fe₂O₃ = 24 / 160 = <b>0,15 mol</b>.<br>" +
+                    "3. Menentukan pereaksi pembatas (membagi mol dengan koefisien):<br>" +
+                    "   • Al = 0,2 / 2 = 0,1<br>" +
+                    "   • Fe₂O₃ = 0,15 / 1 = 0,15<br>" +
+                    "   Karena 0,1 < 0,15, maka <b>Al adalah pereaksi pembatas</b>.<br>" +
+                    "4. Mol Fe yang dihasilkan = (2/2) × mol Al = <b>0,2 mol</b>.<br>" +
+                    "5. Massa Fe = 0,2 mol × 56 g/mol = <b>11,2 gram</b>."
+            },
+            {
+                id: 3,
+                title: "Soal 3: Analisis Titik Didih & Pemanfaatan Fraksi Minyak Bumi",
+                points: 20,
+                question: "Minyak bumi dipisahkan melalui destilasi bertingkat berdasarkan titik didih rata-rata fraksi: W (-42 °C), X (126 °C), Y (216 °C), dan Z (450 °C).\n\nBerikut disajikan 5 pernyataan analisis potensi pemanfaatannya:\n(1) Senyawa W dapat dimanfaatkan sebagai bahan bakar gas kompor (LPG).\n(2) Senyawa X dapat digunakan sebagai minyak pelumas mesin.\n(3) Senyawa Y dapat digunakan sebagai bahan bakar pesawat jet.\n(4) Senyawa Z dapat digunakan sebagai bahan bakar kendaraan bermotor bensin.\n(5) Senyawa Z dapat digunakan sebagai bahan pembuatan lilin.\n\nKombinasi pernyataan yang BENAR adalah...",
+                options: [
+                    "Pernyataan (1), (2), dan (3)",
+                    "Pernyataan (1), (3), dan (5)",
+                    "Pernyataan (2), (3), dan (4)",
+                    "Pernyataan (2), (4), dan (5)",
+                    "Pernyataan (3), (4), dan (5)"
+                ],
+                correctIndex: 1, // B (1, 3, 5)
+                explanation: "<b>Langkah Pembahasan:</b><br>" +
+                    "• <b>Fraksi W (-42 °C):</b> Titik didih di bawah 0 °C (gas pada suhu kamar), tepat untuk bahan bakar LPG (Pernyataan 1 BENAR).<br>" +
+                    "• <b>Fraksi X (126 °C):</b> Berada pada rentang titik didih bensin (30-200 °C), bukan pelumas (Pernyataan 2 SALAH).<br>" +
+                    "• <b>Fraksi Y (216 °C):</b> Sesuai untuk kerosin/avtur bahan bakar pesawat jet (Pernyataan 3 BENAR).<br>" +
+                    "• <b>Fraksi Z (450 °C):</b> Memiliki titik didih paling tinggi (fraksi berat/parafin), digunakan untuk lilin, bukan bensin (Pernyataan 4 SALAH, Pernyataan 5 BENAR)."
+            },
+            {
+                id: 4,
+                title: "Soal 4: Analisis Struktur & Sifat Fisik Hidrokarbon",
+                points: 20,
+                question: "Suatu hidrokarbon berupa cairan mudah menguap. Pembakaran sempurna 2 mol hidrokarbon tersebut menghasilkan 10 mol CO₂ dan 12 mol H₂O. Senyawa tersebut memiliki 3 atom C primer, 1 atom C sekunder, dan 1 atom C tersier.\n\nPerhatikan pernyataan berikut:\n(1) Rumus molekul hidrokarbon tersebut adalah C₅H₁₂\n(2) Memiliki struktur rantai lurus n-pentana\n(3) Memiliki titik didih lebih rendah dibandingkan dengan n-pentana\n\nManakah hasil analisis yang tepat?",
+                options: [
+                    "Pernyataan (1) Benar, (2) Benar, (3) Salah",
+                    "Pernyataan (1) Benar, (2) Salah, (3) Benar",
+                    "Pernyataan (1) Salah, (2) Benar, (3) Benar",
+                    "Pernyataan (1) Salah, (2) Salah, (3) Benar",
+                    "Pernyataan (1) Benar, (2) Benar, (3) Benar"
+                ],
+                correctIndex: 1, // B (Benar - Salah - Benar)
+                explanation: "<b>Langkah Pembahasan:</b><br>" +
+                    "1. Pembakaran 2 mol → 10 mol CO₂ & 12 mol H₂O (per 1 mol: 5 CO₂ & 6 H₂O). Rumus molekulnya adalah <b>C₅H₁₂</b> (Pernyataan 1 BENAR).<br>" +
+                    "2. Ciri 3 C primer, 1 C sekunder, dan 1 C tersier menunjukkan isomer bercabang yaitu <b>2-metilbutana</b>, bukan n-pentana rantai lurus (Pernyataan 2 SALAH).<br>" +
+                    "3. Senyawa alkana bercabang memiliki luas permukaan kontak lebih kecil sehingga gaya London antarmolekulnya lebih lemah. Akibatnya titik didih 2-metilbutana (±28 °C) lebih rendah dibanding n-pentana (±36 °C) (Pernyataan 3 BENAR)."
+            },
+            {
+                id: 5,
+                title: "Soal 5: Termokimia Pembakaran Isomer C₄H₁₀",
+                points: 20,
+                question: "Dua isomer C₄H₁₀ yaitu n-butana dan 2-metilpropana memiliki data entalpi pembakaran standar (ΔHc):\n• n-butana: -2.878 kJ/mol\n• 2-metilpropana: -2.869 kJ/mol\n\nPerhatikan pernyataan berikut:\n(1) 2-metilpropana memberikan energi pembakaran per mol lebih besar dibanding n-butana\n(2) Secara termodinamika 2-metilpropana lebih stabil dan memiliki tingkat energi lebih rendah\n(3) Perbandingan mol CO₂ : H₂O pembakaran sempurna kedua isomer adalah 4 : 5\n\nManakah kesimpulan yang benar mengenai kedua isomer tersebut?",
+                options: [
+                    "Pernyataan (1) Benar, (2) Salah, (3) Benar",
+                    "Pernyataan (1) Benar, (2) Benar, (3) Salah",
+                    "Pernyataan (1) Salah, (2) Benar, (3) Benar",
+                    "Pernyataan (1) Salah, (2) Salah, (3) Benar",
+                    "Pernyataan (1) Benar, (2) Benar, (3) Benar"
+                ],
+                correctIndex: 2, // C (Salah - Benar - Benar)
+                explanation: "<b>Langkah Pembahasan:</b><br>" +
+                    "1. Nilai ΔHc n-butana (-2.878 kJ/mol) melepas kalor lebih banyak dibanding 2-metilpropana (-2.869 kJ/mol). Maka n-butana yang memberikan energi pembakaran lebih besar (Pernyataan 1 SALAH).<br>" +
+                    "2. Karena menghasilkan produk sama tetapi melepas kalor lebih sedikit, 2-metilpropana berada pada tingkat energi awal yang lebih rendah sehingga secara termodinamika lebih stabil (Pernyataan 2 BENAR).<br>" +
+                    "3. Reaksi setara pembakaran C₄H₁₀: C₄H₁₀ + 6,5 O₂ → 4 CO₂ + 5 H₂O. Perbandingan mol CO₂ : H₂O adalah 4 : 5 (Pernyataan 3 BENAR)."
+            }
+        ];
+
+        // Render Soal ke DOM dengan Huruf Opsi A, B, C, D, E
+        const optionLetters = ['A', 'B', 'C', 'D', 'E'];
+        const questionsContainer = document.getElementById('questions-container');
+        
+        function renderQuestions() {
+            questionsContainer.innerHTML = '';
+            quizData.forEach((q) => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4";
+                
+                let optionsHTML = '';
+                q.options.forEach((opt, optIdx) => {
+                    optionsHTML += `
+                        <label class="flex items-start gap-3 p-3.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition text-sm">
+                            <input type="radio" name="question_${q.id}" value="${optIdx}" onchange="updateProgress()" class="mt-0.5 text-emerald-600 focus:ring-emerald-500">
+                            <span class="text-slate-700 font-medium"><strong>${optionLetters[optIdx]}.</strong> ${opt}</span>
+                        </label>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md">${q.title}</span>
+                        <span class="text-xs font-semibold text-slate-500">${q.points} Poin</span>
+                    </div>
+                    <p class="text-sm font-semibold text-slate-800 whitespace-pre-line leading-relaxed">${q.question}</p>
+                    <div class="space-y-2 pt-2">
+                        ${optionsHTML}
+                    </div>
+                `;
+                questionsContainer.appendChild(card);
+            });
+        }
+
+        // Event Listener untuk input Nama & Kelas
+        document.getElementById('student-name').addEventListener('input', () => validateForm());
+        document.getElementById('student-class').addEventListener('input', () => validateForm());
+
+        // Tracking Progress & Validasi Submit
+        function updateProgress() {
+            let answeredCount = 0;
+            quizData.forEach(q => {
+                const selected = document.querySelector(`input[name="question_${q.id}"]:checked`);
+                if (selected) answeredCount++;
+            });
+            
+            const percentage = (answeredCount / quizData.length) * 100;
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+            document.getElementById('progress-text').innerText = `${answeredCount} dari ${quizData.length} Soal Dijawab`;
+
+            validateForm(answeredCount);
+        }
+
+        function validateForm(answeredCount) {
+            if (answeredCount === undefined) {
+                answeredCount = 0;
+                quizData.forEach(q => {
+                    if (document.querySelector(`input[name="question_${q.id}"]:checked`)) answeredCount++;
+                });
+            }
+
+            const studentName = document.getElementById('student-name').value.trim();
+            const studentClass = document.getElementById('student-class').value.trim();
+            const btnSubmit = document.getElementById('btn-submit');
+            const submitHint = document.getElementById('submit-hint');
+
+            const isQuestionsComplete = answeredCount === quizData.length;
+            const isInfoComplete = studentName !== '' && studentClass !== '';
+
+            if (isQuestionsComplete && isInfoComplete) {
+                btnSubmit.disabled = false;
+                btnSubmit.className = "w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold px-8 py-3 rounded-lg shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer";
+                submitHint.className = "text-xs text-emerald-600 font-medium flex items-center gap-1.5";
+                submitHint.innerHTML = `<svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> <span>Semua data dan soal telah lengkap! Silakan kumpulkan jawaban Anda.</span>`;
+            } else {
+                btnSubmit.disabled = true;
+                btnSubmit.className = "w-full sm:w-auto bg-slate-300 text-slate-500 font-semibold px-8 py-3 rounded-lg shadow-none transition-all flex items-center justify-center gap-2 cursor-not-allowed";
+                
+                let missing = [];
+                if (!isInfoComplete) missing.push("Identitas Responden");
+                if (!isQuestionsComplete) missing.push(`Soal (${answeredCount}/${quizData.length} dijawab)`);
+
+                submitHint.className = "text-xs text-amber-600 font-medium flex items-center gap-1.5";
+                submitHint.innerHTML = `<svg class="w-4 h-4 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg> <span>Lengkapi ${missing.join(' & ')} untuk mengaktifkan tombol kumpulkan.</span>`;
+            }
+        }
+
+        // Submit Quiz & Evaluasi
+        document.getElementById('quiz-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const studentName = document.getElementById('student-name').value.trim();
+            const studentClass = document.getElementById('student-class').value.trim();
+
+            let answeredCount = 0;
+            quizData.forEach(q => {
+                if (document.querySelector(`input[name="question_${q.id}"]:checked`)) answeredCount++;
+            });
+
+            if (answeredCount < quizData.length || !studentName || !studentClass) {
+                return;
+            }
+
+            // Hitung Skor & Render Kunci Jawaban + Pembahasan
+            let totalScore = 0;
+            const reviewContainer = document.getElementById('review-container');
+            reviewContainer.innerHTML = '';
+
+            const userAnswers = [];
+
+            quizData.forEach((q) => {
+                const selected = document.querySelector(`input[name="question_${q.id}"]:checked`);
+                const userAnsIndex = selected ? parseInt(selected.value) : -1;
+                const isCorrect = userAnsIndex === q.correctIndex;
+
+                if (isCorrect) {
+                    totalScore += q.points;
+                }
+
+                userAnswers.push({
+                    questionId: q.id,
+                    selectedOption: userAnsIndex !== -1 ? optionLetters[userAnsIndex] : '-',
+                    isCorrect: isCorrect
+                });
+
+                const reviewCard = document.createElement('div');
+                reviewCard.className = `bg-white rounded-xl shadow-sm border p-6 space-y-4 ${isCorrect ? 'border-emerald-300 bg-emerald-50/20' : 'border-red-300 bg-red-50/20'}`;
+
+                const userAnsText = userAnsIndex !== -1 ? `<strong>${optionLetters[userAnsIndex]}.</strong> ${q.options[userAnsIndex]}` : "<em>Tidak Dijawab</em>";
+                const correctAnsText = `<strong>${optionLetters[q.correctIndex]}.</strong> ${q.options[q.correctIndex]}`;
+
+                reviewCard.innerHTML = `
+                    <div class="flex items-center justify-between border-b pb-2">
+                        <span class="text-xs font-bold text-slate-700">${q.title}</span>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold ${isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">
+                            ${isCorrect ? 'BENAR (+20 Poin)' : 'SALAH (0 Poin)'}
+                        </span>
+                    </div>
+
+                    <p class="text-sm font-semibold text-slate-800 whitespace-pre-line">${q.question}</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs pt-2">
+                        <div class="p-3 rounded-lg ${isCorrect ? 'bg-emerald-100/60 border border-emerald-200' : 'bg-red-100/60 border border-red-200'}">
+                            <span class="block font-bold text-slate-600 mb-1">Jawaban Anda:</span>
+                            <span class="${isCorrect ? 'text-emerald-900 font-semibold' : 'text-red-900 font-semibold'}">${userAnsText}</span>
+                        </div>
+                        <div class="p-3 rounded-lg bg-emerald-100/80 border border-emerald-300">
+                            <span class="block font-bold text-emerald-900 mb-1">Kunci Jawaban Tepat:</span>
+                            <span class="text-emerald-950 font-semibold">${correctAnsText}</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 bg-slate-50 border border-slate-200 rounded-lg p-4 text-xs leading-relaxed text-slate-700">
+                        <div class="font-bold text-slate-800 text-sm mb-1 flex items-center gap-1.5">
+                            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Pembahasan Soal:
+                        </div>
+                        <div>${q.explanation}</div>
+                    </div>
+                `;
+
+                reviewContainer.appendChild(reviewCard);
+            });
+
+            // Simpan Data Responden Ke LocalStorage
+            const submissionTime = new Date().toLocaleString('id-ID', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+
+            const newSubmission = {
+                id: Date.now(),
+                name: studentName,
+                studentClass: studentClass,
+                score: totalScore,
+                timestamp: submissionTime,
+                answers: userAnswers
+            };
+
+            saveSubmission(newSubmission);
+
+            // Tampilkan Skor Akhir
+            document.getElementById('final-score').innerText = totalScore;
+            document.getElementById('student-summary').innerText = `Nama: ${studentName} | Kelas: ${studentClass}`;
+
+            const feedbackElem = document.getElementById('score-feedback');
+            if (totalScore === 100) {
+                feedbackElem.innerText = "Sempurna! Anda menguasai seluruh materi Stoikiometri dan Hidrokarbon.";
+            } else if (totalScore >= 80) {
+                feedbackElem.innerText = "Sangat Baik! Pemahaman konsep TKA Kimia Anda sudah matang.";
+            } else if (totalScore >= 60) {
+                feedbackElem.innerText = "Cukup Baik. Pelajari kembali beberapa pembahasan soal untuk penyempurnaan.";
+            } else {
+                feedbackElem.innerText = "Perlu Latihan Lagi. Pelajari pembahasan lengkap di bawah ini.";
+            }
+
+            // Tampilkan Seksi Hasil Pembahasan & Scroll Halus
+            const resultsSection = document.getElementById('results-section');
+            resultsSection.classList.remove('hidden');
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Manajemen Stored Submissions
+        function showNotification(msg) {
+            const notifyElem = document.getElementById('action-notification');
+            if (!notifyElem) return;
+            notifyElem.innerText = msg;
+            notifyElem.classList.remove('hidden');
+            setTimeout(() => {
+                notifyElem.classList.add('hidden');
+            }, 4000);
+        }
+
+        function getStoredSubmissions() {
+            try {
+                return JSON.parse(localStorage.getItem('kimia_quiz_submissions')) || [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveSubmission(submission) {
+            const list = getStoredSubmissions();
+            list.push(submission);
+            localStorage.setItem('kimia_quiz_submissions', JSON.stringify(list));
+            renderRecapTable();
+        }
+
+        function renderRecapTable() {
+            const list = getStoredSubmissions();
+            const tableBody = document.getElementById('recap-table-body');
+            const totalElem = document.getElementById('recap-total-count');
+            const avgElem = document.getElementById('recap-avg-score');
+            const maxElem = document.getElementById('recap-max-score');
+
+            totalElem.innerText = list.length;
+            
+            if (list.length === 0) {
+                avgElem.innerText = '0';
+                maxElem.innerText = '0';
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-6 text-slate-400 italic">Belum ada data responden yang mengumpulkan.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            const totalScore = list.reduce((acc, cur) => acc + cur.score, 0);
+            const avgScore = (totalScore / list.length).toFixed(1);
+            const maxScore = Math.max(...list.map(s => s.score));
+
+            avgElem.innerText = avgScore;
+            maxElem.innerText = maxScore;
+
+            tableBody.innerHTML = '';
+            list.forEach((sub, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition";
+                
+                const answersBadgeHTML = sub.answers.map((ans, qIdx) => {
+                    const badgeClass = ans.isCorrect ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-red-100 text-red-800 border-red-300';
+                    return `<span class="px-1.5 py-0.5 rounded border text-[10px] font-mono font-bold ${badgeClass}">S${qIdx+1}:${ans.selectedOption}</span>`;
+                }).join(' ');
+
+                tr.innerHTML = `
+                    <td class="px-4 py-3 font-semibold text-slate-500">${idx + 1}</td>
+                    <td class="px-4 py-3 font-semibold text-slate-800">${sub.name}</td>
+                    <td class="px-4 py-3 text-slate-600">${sub.studentClass}</td>
+                    <td class="px-4 py-3 text-center text-slate-500 text-[11px]">${sub.timestamp}</td>
+                    <td class="px-4 py-3 text-center">${answersBadgeHTML}</td>
+                    <td class="px-4 py-3 text-center font-extrabold text-emerald-700">${sub.score}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        let pendingAdminAction = null;
+
+        function openAdminAuthModal(action) {
+            pendingAdminAction = action;
+            const input = document.getElementById('admin-password-input');
+            const errorMsg = document.getElementById('admin-auth-error');
+            if (input) input.value = '';
+            if (errorMsg) errorMsg.classList.add('hidden');
+            
+            const modal = document.getElementById('admin-auth-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                setTimeout(() => input && input.focus(), 100);
+            }
+        }
+
+        function closeAdminAuthModal() {
+            const modal = document.getElementById('admin-auth-modal');
+            if (modal) modal.classList.add('hidden');
+            pendingAdminAction = null;
+        }
+
+        function verifyAdminPassword() {
+            const input = document.getElementById('admin-password-input');
+            const errorMsg = document.getElementById('admin-auth-error');
+            const password = input ? input.value : '';
+
+            if (password === 'smanli') {
+                closeAdminAuthModal();
+                if (pendingAdminAction === 'csv') {
+                    prepareAndOpenExportModal();
+                }
+            } else {
+                if (errorMsg) errorMsg.classList.remove('hidden');
+            }
+        }
+
+        // Mempersiapkan Teks CSV & Buka Modal Ekspor
+        function generateCSVContent() {
+            const list = getStoredSubmissions();
+            if (list.length === 0) return '';
+
+            let csvContent = "No,Nama Responden,Kelas / Absen,Waktu Submit,Soal 1,Soal 2,Soal 3,Soal 4,Soal 5,Skor Total\n";
+
+            list.forEach((sub, idx) => {
+                const s1 = sub.answers[0] ? sub.answers[0].selectedOption : '-';
+                const s2 = sub.answers[1] ? sub.answers[1].selectedOption : '-';
+                const s3 = sub.answers[2] ? sub.answers[2].selectedOption : '-';
+                const s4 = sub.answers[3] ? sub.answers[3].selectedOption : '-';
+                const s5 = sub.answers[4] ? sub.answers[4].selectedOption : '-';
+                
+                const cleanName = `"${sub.name.replace(/"/g, '""')}"`;
+                const cleanClass = `"${sub.studentClass.replace(/"/g, '""')}"`;
+
+                csvContent += `${idx + 1},${cleanName},${cleanClass},"${sub.timestamp}",${s1},${s2},${s3},${s4},${s5},${sub.score}\n`;
+            });
+
+            return csvContent;
+        }
+
+        function prepareAndOpenExportModal() {
+            const list = getStoredSubmissions();
+            if (list.length === 0) {
+                showNotification('Belum ada data responden untuk diunduh.');
+                return;
+            }
+
+            const rawCSV = generateCSVContent();
+            const textarea = document.getElementById('csv-raw-textarea');
+            if (textarea) textarea.value = rawCSV;
+
+            const modal = document.getElementById('export-data-modal');
+            if (modal) modal.classList.remove('hidden');
+
+            // Coba pemicu unduh otomatis
+            downloadXLS();
+        }
+
+        function closeExportDataModal() {
+            const modal = document.getElementById('export-data-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        // Jalur 1: Unduh Format Excel Native (.xls)
+        function downloadXLS() {
+            const list = getStoredSubmissions();
+            if (list.length === 0) {
+                showNotification('Belum ada data responden.');
+                return;
+            }
+
+            let tableHTML = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+            <head><meta charset="UTF-8"></head>
+            <body>
+            <table border="1">
+            <thead>
+                <tr style="background-color:#047857; color:#ffffff; font-weight:bold;">
+                    <th>No</th>
+                    <th>Nama Responden</th>
+                    <th>Kelas / Absen</th>
+                    <th>Waktu Submit</th>
+                    <th>Soal 1</th>
+                    <th>Soal 2</th>
+                    <th>Soal 3</th>
+                    <th>Soal 4</th>
+                    <th>Soal 5</th>
+                    <th>Skor Total</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+            list.forEach((sub, idx) => {
+                const s1 = sub.answers[0] ? sub.answers[0].selectedOption : '-';
+                const s2 = sub.answers[1] ? sub.answers[1].selectedOption : '-';
+                const s3 = sub.answers[2] ? sub.answers[2].selectedOption : '-';
+                const s4 = sub.answers[3] ? sub.answers[3].selectedOption : '-';
+                const s5 = sub.answers[4] ? sub.answers[4].selectedOption : '-';
+
+                tableHTML += `<tr>
+                    <td>${idx + 1}</td>
+                    <td>${sub.name}</td>
+                    <td>${sub.studentClass}</td>
+                    <td>${sub.timestamp}</td>
+                    <td align="center">${s1}</td>
+                    <td align="center">${s2}</td>
+                    <td align="center">${s3}</td>
+                    <td align="center">${s4}</td>
+                    <td align="center">${s5}</td>
+                    <td align="center"><b>${sub.score}</b></td>
+                </tr>`;
+            });
+
+            tableHTML += `</tbody></table></body></html>`;
+
+            try {
+                const blob = new Blob([tableHTML], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Rekap_Kuis_TKA_Kimia_${new Date().toISOString().slice(0,10)}.xls`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+                showNotification('Proses unduh Excel (.xls) dimulai!');
+            } catch (err) {
+                showNotification('Gagal mengunduh otomatis. Silakan gunakan tombol Salin Data ke Clipboard.');
+            }
+        }
+
+        // Jalur 2: Unduh File CSV
+        function downloadCSVDirect() {
+            const rawCSV = "\uFEFF" + generateCSVContent();
+            if (!rawCSV) return;
+
+            try {
+                const blob = new Blob([rawCSV], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Rekap_Kuis_TKA_Kimia_${new Date().toISOString().slice(0,10)}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+                showNotification('Proses unduh CSV dimulai!');
+            } catch (e) {
+                showNotification('Gagal mengunduh CSV. Gunakan tombol Salin Data ke Clipboard.');
+            }
+        }
+
+        // Jalur 3: Salin Teks Rekapitulasi ke Clipboard (Solusi Utama jika iframe/browser blokir download)
+        function copyCSVToClipboard() {
+            const textarea = document.getElementById('csv-raw-textarea');
+            if (!textarea || !textarea.value) return;
+            
+            textarea.select();
+            textarea.setSelectionRange(0, 99999);
+
+            try {
+                document.execCommand('copy');
+                showNotification('✅ Data rekap berhasil disalin! Buka Excel, klik sel A1 lalu tekan Paste (Ctrl+V).');
+            } catch (err) {
+                showNotification('Gagal menyalin otomatis. Silakan pilih semua teks di kotak di atas dan salin manual (Ctrl+C).');
+            }
+        }
+
+        function exportToJSON() {
+            const list = getStoredSubmissions();
+            if (list.length === 0) {
+                showNotification('Belum ada data responden untuk diunduh.');
+                return;
+            }
+
+            try {
+                const dataStr = JSON.stringify(list, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Rekap_Kuis_TKA_Kimia_${new Date().toISOString().slice(0,10)}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+                showNotification('File Data JSON berhasil diunduh!');
+            } catch(e) {
+                showNotification('Gagal mengunduh file JSON.');
+            }
+        }
+
+        function startNewRespondent() {
+            document.getElementById('student-name').value = '';
+            document.getElementById('student-class').value = '';
+            
+            // Reset pilihan radio button
+            quizData.forEach(q => {
+                const selected = document.querySelector(`input[name="question_${q.id}"]:checked`);
+                if (selected) selected.checked = false;
+            });
+
+            document.getElementById('results-section').classList.add('hidden');
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function clearAllSubmissions() {
+            localStorage.removeItem('kimia_quiz_submissions');
+            renderRecapTable();
+            showNotification('Seluruh data rekapitulasi responden berhasil dihapus.');
+        }
+
+        function loadSampleData() {
+            const sampleList = [
+                {
+                    id: 101,
+                    name: "Ahmad Rizky Pratama",
+                    studentClass: "XII MIPA 1 / 02",
+                    score: 100,
+                    timestamp: new Date().toLocaleString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                    answers: [
+                        { questionId: 1, selectedOption: "C", isCorrect: true },
+                        { questionId: 2, selectedOption: "B", isCorrect: true },
+                        { questionId: 3, selectedOption: "B", isCorrect: true },
+                        { questionId: 4, selectedOption: "B", isCorrect: true },
+                        { questionId: 5, selectedOption: "C", isCorrect: true }
+                    ]
+                },
+                {
+                    id: 102,
+                    name: "Siti Nurhaliza",
+                    studentClass: "XII MIPA 1 / 28",
+                    score: 80,
+                    timestamp: new Date().toLocaleString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                    answers: [
+                        { questionId: 1, selectedOption: "D", isCorrect: false },
+                        { questionId: 2, selectedOption: "B", isCorrect: true },
+                        { questionId: 3, selectedOption: "B", isCorrect: true },
+                        { questionId: 4, selectedOption: "B", isCorrect: true },
+                        { questionId: 5, selectedOption: "C", isCorrect: true }
+                    ]
+                },
+                {
+                    id: 103,
+                    name: "Budi Santoso",
+                    studentClass: "XII MIPA 2 / 07",
+                    score: 60,
+                    timestamp: new Date().toLocaleString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                    answers: [
+                        { questionId: 1, selectedOption: "C", isCorrect: true },
+                        { questionId: 2, selectedOption: "A", isCorrect: false },
+                        { questionId: 3, selectedOption: "B", isCorrect: true },
+                        { questionId: 4, selectedOption: "A", isCorrect: false },
+                        { questionId: 5, selectedOption: "C", isCorrect: true }
+                    ]
+                },
+                {
+                    id: 104,
+                    name: "Dewi Anggraini",
+                    studentClass: "XII MIPA 2 / 12",
+                    score: 80,
+                    timestamp: new Date().toLocaleString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                    answers: [
+                        { questionId: 1, selectedOption: "C", isCorrect: true },
+                        { questionId: 2, selectedOption: "B", isCorrect: true },
+                        { questionId: 3, selectedOption: "C", isCorrect: false },
+                        { questionId: 4, selectedOption: "B", isCorrect: true },
+                        { questionId: 5, selectedOption: "C", isCorrect: true }
+                    ]
+                },
+                {
+                    id: 105,
+                    name: "Fajar Ramadhan",
+                    studentClass: "XII MIPA 3 / 18",
+                    score: 40,
+                    timestamp: new Date().toLocaleString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                    answers: [
+                        { questionId: 1, selectedOption: "A", isCorrect: false },
+                        { questionId: 2, selectedOption: "B", isCorrect: true },
+                        { questionId: 3, selectedOption: "A", isCorrect: false },
+                        { questionId: 4, selectedOption: "B", isCorrect: true },
+                        { questionId: 5, selectedOption: "E", isCorrect: false }
+                    ]
+                }
+            ];
+
+            localStorage.setItem('kimia_quiz_submissions', JSON.stringify(sampleList));
+            renderRecapTable();
+            showNotification('5 data responden simulasi berhasil dimuat!');
+        }
+
+        // Inisialisasi awal
+        renderQuestions();
+        renderRecapTable();
+    </script>
+</body>
+</html>
